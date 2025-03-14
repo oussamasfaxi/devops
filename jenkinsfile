@@ -32,10 +32,9 @@ pipeline {
         }
     }
     post {
-        // Optional: Actions to be performed after the pipeline completes
         always {
-            // Archive build artifacts or test results if needed
-            // archiveArtifacts allowEmptyArchive: true, artifacts: '**/target/*.jar'
+            // You can add steps here that should run after any execution (successful or failed)
+            echo 'This will always run, regardless of success or failure'
         }
         success {
             // Actions to be performed when the pipeline is successful
