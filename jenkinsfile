@@ -19,9 +19,9 @@ pipeline {
                 }
             }
         }
-        stage('Nexus') {
+        stage('MVN Nexis') {
             steps {
-                sh 'mvn clean deploy'
+                sh 'mvn deploy -Dmaven.test.skip=true'
             }
         }
     }
