@@ -3,26 +3,47 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                // Clean and compile the project using Maven
                 sh 'mvn clean compile'
             }
         }
         stage('Sonar Analysis') {
             steps {
+                // Use SonarQube environment configuration
                 withSonarQubeEnv('sq1') {
+                    // Run Sonar analysis on the code
                     sh 'mvn sonar:sonar'
                 }
                 script {
+                    // Wait for the quality gate result and check if it passed
                     def qualityGate = waitForQualityGate()
                     if (qualityGate.status != 'OK') {
+                        // If quality gate fails, stop the build and show an error message
                         error "Quality gate failed: ${qualityGate.status}"
                     }
                 }
             }
         }
-        stage('MVN Nexis') {
+        stage('MVN Nexus') {
             steps {
+                // Deploy the artifact to the repository, skipping tests
                 sh 'mvn deploy -Dmaven.test.skip=true'
             }
+        }
+    }
+    post {
+        // Optional: Actions to be performed after the pipeline completes
+        always {
+            // Archive build artifacts or test results if needed
+            // archiveArtifacts allowEmptyArchive: true, artifacts: '**/target/*.jar'
+        }
+        success {
+            // Actions to be performed when the pipeline is successful
+            echo 'Build and deployment successful!'
+        }
+        failure {
+            // Actions to be performed when the pipeline fails
+            echo 'Build or deployment failed.'
         }
     }
 }
