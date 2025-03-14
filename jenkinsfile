@@ -7,16 +7,22 @@ pipeline {
             }
         }
         stage('Sonar Analysis') {
-                    steps {
-                        withSonarQubeEnv('sq1') {
-                            sh 'mvn sonar:sonar'
-                        }
-                        }
-                        }
-         stage('Nexus') {
-                     steps {
-                        sh 'mvn clean deploy'
-                 }
+            steps {
+                withSonarQubeEnv('sq1') {
+                    sh 'mvn sonar:sonar'
+                }
+                script {
+                    def qualityGate = waitForQualityGate()
+                    if (qualityGate.status != 'OK') {
+                        error "Quality gate failed: ${qualityGate.status}"
                     }
- }
+                }
+            }
+        }
+        stage('Nexus') {
+            steps {
+                sh 'mvn clean deploy'
+            }
+        }
+    }
 }
