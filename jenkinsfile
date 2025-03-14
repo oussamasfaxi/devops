@@ -11,9 +11,9 @@ pipeline {
                 sh 'mvn test -Dspring.profiles.active=test'
             }
         }
-        stage('SonarQube') {
+        stage('Sonar Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('sq1') {
                     sh 'mvn sonar:sonar'
                 }
             }
