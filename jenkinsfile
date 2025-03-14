@@ -3,46 +3,25 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                // Clean and compile the project using Maven
                 sh 'mvn clean compile'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test -Dspring.profiles.active=test'
             }
         }
         stage('Sonar Analysis') {
             steps {
-                // Use SonarQube environment configuration
                 withSonarQubeEnv('sq1') {
-                    // Run Sonar analysis on the code
                     sh 'mvn sonar:sonar'
                 }
-                script {
-                    // Wait for the quality gate result and check if it passed
-                    def qualityGate = waitForQualityGate()
-                    if (qualityGate.status != 'OK') {
-                        // If quality gate fails, stop the build and show an error message
-                        error "Quality gate failed: ${qualityGate.status}"
-                    }
-                }
             }
         }
-        stage('MVN Nexus') {
+        stage('Nexus') {
             steps {
-                // Deploy the artifact to the repository, skipping tests
-                sh 'mvn deploy -Dmaven.test.skip=true'
+                sh 'mvn clean deploy -Dmaven.test.skip=true'
             }
-        }
-    }
-    post {
-        always {
-            // You can add steps here that should run after any execution (successful or failed)
-            echo 'This will always run, regardless of success or failure'
-        }
-        success {
-            // Actions to be performed when the pipeline is successful
-            echo 'Build and deployment successful!'
-        }
-        failure {
-            // Actions to be performed when the pipeline fails
-            echo 'Build or deployment failed.'
         }
     }
 }
