@@ -11,17 +11,17 @@ pipeline {
                 sh 'mvn test -Dspring.profiles.active=test'
             }
         }
-        stage('Sonar Analysis') {
+     */   stage('Sonar Analysis') {
             steps {
                 withSonarQubeEnv('sq1') {
                     sh 'mvn sonar:sonar'
                 }
             }
-        }
-     /*   stage('Nexus') {
+        }*/
+        stage('Nexus') {
             steps {
                 sh 'mvn deploy -DskipTests'
             }
-        }*/
+        }
     }
 }
